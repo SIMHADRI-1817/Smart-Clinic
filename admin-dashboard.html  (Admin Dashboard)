@@ -1,1 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartClinic</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">SmartClinic</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="admin-dashboard.html">Analytics</a></li>
+                <li><a href="index.html" class="btn-login">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <h1>Admin Dashboard - Analytics</h1>
+
+            <!-- Key Metrics -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card metric-card">
+                    <h3>Daily Utilization</h3>
+                    <p class="metric-value">78%</p>
+                    <p class="metric-label">of slots booked today</p>
+                </div>
+                <div class="dashboard-card metric-card">
+                    <h3>Avg Wait Time</h3>
+                    <p class="metric-value">12 mins</p>
+                    <p class="metric-label">Average patient wait</p>
+                </div>
+                <div class="dashboard-card metric-card">
+                    <h3>No-Show Rate</h3>
+                    <p class="metric-value">5%</p>
+                    <p class="metric-label">Missed appointments</p>
+                </div>
+                <div class="dashboard-card metric-card">
+                    <h3>Total Patients</h3>
+                    <p class="metric-value">156</p>
+                    <p class="metric-label">This month</p>
+                </div>
+            </div>
+
+            <!-- Daily Stats -->
+            <div class="dashboard-card">
+                <h3>Weekly Statistics</h3>
+                <table class="stats-table">
+                    <tr>
+                        <th>Day</th>
+                        <th>Appointments</th>
+                        <th>Completed</th>
+                        <th>No-Shows</th>
+                        <th>Avg Wait (mins)</th>
+                    </tr>
+                    <tr>
+                        <td>Monday</td>
+                        <td>18</td>
+                        <td>17</td>
+                        <td>1</td>
+                        <td>14</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>22</td>
+                        <td>21</td>
+                        <td>1</td>
+                        <td>11</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>20</td>
+                        <td>19</td>
+                        <td>1</td>
+                        <td>13</td>
+                    </tr>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>19</td>
+                        <td>18</td>
+                        <td>1</td>
+                        <td>12</td>
+                    </tr>
+                    <tr>
+                        <td>Friday</td>
+                        <td>25</td>
+                        <td>24</td>
+                        <td>1</td>
+                        <td>15</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Doctor Performance -->
+            <div class="dashboard-card">
+                <h3>Doctor Performance</h3>
+                <table class="stats-table">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Patients Seen</th>
+                        <th>Avg Time per Patient</th>
+                        <th>Rating</th>
+                    </tr>
+                    <tr>
+                        <td>Dr. Smith</td>
+                        <td>45</td>
+                        <td>18 mins</td>
+                        <td>⭐ 4.8</td>
+                    </tr>
+                    <tr>
+                        <td>Dr. Johnson</td>
+                        <td>42</td>
+                        <td>20 mins</td>
+                        <td>⭐ 4.6</td>
+                    </tr>
+                    <tr>
+                        <td>Dr. Williams</td>
+                        <td>38</td>
+                        <td>22 mins</td>
+                        <td>⭐ 4.5</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 SmartClinic. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
 
