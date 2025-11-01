@@ -20,3 +20,5 @@ To reduce waiting time in clinics by managing patient appointments and live queu
  
 
  
+# Smart-Clinic
+Bits Project
