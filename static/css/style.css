@@ -12,3 +12,15 @@ button { margin-top:12px; padding:8px 12px; background:#1f6feb; color:white; bor
 .messages li.success { color: green; }
 .messages li.error { color: red; }
 .messages li.info { color: #333; }
+.topnav { padding:10px 0; text-align:center; }
+.topnav a { margin:0 10px; color:#1f6feb; text-decoration:none; font-weight:600; }
+.topnav a:hover { text-decoration:underline; }
+hr { border: none; border-top: 1px solid #eee; margin: 12px 0 20px; }
+ 
+.messages { margin:8px 0; padding:0; }
+.messages li { padding:6px 8px; border-radius:4px; margin-bottom:6px; }
+.messages li.success { background:#e6ffed; color:#176b29; }
+.messages li.error { background:#ffecec; color:#a00; }
+.messages li.info { background:#f0f0f0; color:#333; }
+table th { background:#f0f6ff; }
+.container { max-width: 1000px; margin: 20px auto; }
