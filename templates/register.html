@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Register - SmartClinic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="topnav">
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('booking') }}">Book</a>
+  </nav>
+  <hr/>
+  <div class="container">
+    <h2>Register</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="messages">
+          {% for category, msg in messages %}
+            <li class="{{ category }}">{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form method="post">
+      <label>Full name</label><br><input name="full_name"><br>
+      <label>Username</label><br><input name="username" required><br>
+      <label>Email (optional)</label><br><input name="email" type="email"><br>
+      <label>Password</label><br><input name="password" type="password" required><br>
+      <label>Role</label><br>
+      <select name="role">
+        <option value="patient" selected>Patient</option>
+        <option value="reception">Receptionist</option>
+      </select><br>
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have account? <a href="{{ url_for('login') }}">Login</a></p>
+  </div>
+</body>
+</html>
+ 

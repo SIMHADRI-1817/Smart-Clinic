@@ -1,21 +1,90 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>SmartClinic - Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .welcome {
+      text-align: center;
+      margin-top: 60px;
+    }
+    .welcome h1 {
+      color: #1f6feb;
+    }
+    .welcome p {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #333;
+    }
+    .buttons a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background: #1f6feb;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .buttons a:hover {
+      background: #1556b3;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>SmartClinic</h1>
-    <p>Reduce waiting time with booking and live queue.</p>
-    <p>
-      <a href="{{ url_for('booking') }}">Book Appointment</a> |
-      <a href="{{ url_for('appointments') }}">View Appointments</a> |
-      <a href="{{ url_for('reception') }}">Reception Dashboard</a> |
-      <a href="{{ url_for('patient_dashboard') }}">Patient Dashboard</a> |
-      <a href="{{ url_for('admin') }}">Admin Dashboard</a>
-    </p>
+ 
+  <!-- ✅ Navbar -->
+  <nav class="topnav">
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('booking') }}">Book</a> |
+    <a href="{{ url_for('appointments') }}">All Appointments</a> |
+    <a href="{{ url_for('reception') }}">Reception</a> |
+    <a href="{{ url_for('admin') }}">Admin</a> |
+    <a href="{{ url_for('patient_dashboard') }}">Patient Dashboard</a>
+ 
+    <!-- Right side: user info or login/register -->
+    <span style="float:right;">
+      {% if session.get('user_id') %}
+        Hello, {{ session.get('full_name') or session.get('username') }} |
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a> |
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </span>
+  </nav>
+  <hr/>
+ 
+  <!-- ✅ Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="messages">
+        {% for category, msg in messages %}
+          <li class="{{ category }}">{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+ 
+  <!-- ✅ Main Welcome Section -->
+  <div class="welcome">
+    <h1>Welcome to SmartClinic</h1>
+    <p>Your smart appointment and clinic management system.</p>
+ 
+    <div class="buttons">
+      <a href="{{ url_for('booking') }}">Book Appointment</a>
+      <a href="{{ url_for('appointments') }}">View Appointments</a>
+      <a href="{{ url_for('patient_dashboard') }}">Patient Dashboard</a>
+    </div>
+ 
+    {% if not session.get('user_id') %}
+      <p style="margin-top:20px;">Please <a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">Register</a> to continue.</p>
+    {% else %}
+      <p style="margin-top:20px;">You are logged in as <b>{{ session.get('role') }}</b>.</p>
+    {% endif %}
   </div>
+ 
 </body>
 </html>
+ 

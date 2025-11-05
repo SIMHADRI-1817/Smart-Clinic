@@ -1,14 +1,12 @@
-# app.py (with authentication)
-from flask import Flask, render_template, request, redirect, url_for, flash, Response, session
+# app.py (complete updated file for Week 2)
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 import sqlite3
 from datetime import datetime
 import csv
 from io import StringIO
-from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
  
 app = Flask(__name__)
-app.secret_key = "dev_secret_for_flash"  # change for production
+app.secret_key = "dev_secret_for_flash"  # development only
  
 DB = 'clinic.db'
  
@@ -17,109 +15,12 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
  
-# -------------------------
-# Authentication helpers
-# -------------------------
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash("Please log in to access this page.", "error")
-            return redirect(url_for('login', next=request.path))
-        return f(*args, **kwargs)
-    return decorated_function
- 
-def role_required(*allowed_roles):
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            role = session.get('role')
-            if role not in allowed_roles:
-                flash("You do not have permission to access this page.", "error")
-                return redirect(url_for('home'))
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
- 
-def get_current_user():
-    uid = session.get('user_id')
-    if not uid:
-        return None
-    conn = get_db_connection()
-    user = conn.execute('SELECT id, username, full_name, role FROM users WHERE id=?', (uid,)).fetchone()
-    conn.close()
-    return user
- 
-# -------------------------
-# Auth routes
-# -------------------------
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username','').strip()
-        password = request.form.get('password','').strip()
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE username=?', (username,)).fetchone()
-        conn.close()
-        if user and check_password_hash(user['password'], password):
-            session['user_id'] = user['id']
-            session['username'] = user['username']
-            session['role'] = user['role']
-            session['full_name'] = user['full_name']
-            flash("Logged in successfully.", "success")
-            next_page = request.args.get('next') or url_for('home')
-            return redirect(next_page)
-        else:
-            flash("Invalid username or password.", "error")
-            return redirect(url_for('login'))
-    return render_template('login.html')
- 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    # optional: you can remove register route if you don't want self-registration
-    if request.method == 'POST':
-        username = request.form.get('username','').strip()
-        full_name = request.form.get('full_name','').strip()
-        email = request.form.get('email','').strip()
-        password = request.form.get('password','').strip()
-        role = request.form.get('role','patient').strip()  # default role patient
-        if not (username and password):
-            flash("Username and password required.", "error")
-            return redirect(url_for('register'))
-        hashed = generate_password_hash(password)
-        conn = get_db_connection()
-        try:
-            conn.execute('INSERT INTO users (username, email, password, role, full_name) VALUES (?,?,?,?,?)',
-                         (username, email, hashed, role, full_name))
-            conn.commit()
-            flash("Registration successful. Please log in.", "success")
-            return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
-            flash("Username or email already exists.", "error")
-            return redirect(url_for('register'))
-        finally:
-            conn.close()
-    return render_template('register.html')
- 
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash("Logged out.", "info")
-    return redirect(url_for('home'))
- 
-# -------------------------
-# Existing routes (booking, appointments, reception, admin...)
-# Keep your routes below; I include them so file is complete
-# -------------------------
- 
 @app.route('/')
 def home():
-    user = get_current_user()
-    return render_template('index.html', user=user)
+    return render_template('index.html')
  
 # Booking page (GET shows form, POST saves)
 @app.route('/booking', methods=['GET', 'POST'])
-@login_required  # require login for booking
 def booking():
     if request.method == 'POST':
         patient = request.form.get('patient_name', '').strip()
@@ -140,9 +41,8 @@ def booking():
         return redirect(url_for('appointments'))
     return render_template('booking.html')
  
-# Patient view: show all appointments
+# Patient view: show all appointments (read-only)
 @app.route('/appointments')
-@login_required
 def appointments():
     conn = get_db_connection()
     rows = conn.execute('SELECT * FROM appointments ORDER BY date, time').fetchall()
@@ -151,7 +51,6 @@ def appointments():
  
 # Patient dashboard (search & list)
 @app.route('/patient_dashboard', methods=['GET'])
-@login_required
 def patient_dashboard():
     q = request.args.get('q', '').strip()
     conn = get_db_connection()
@@ -164,7 +63,6 @@ def patient_dashboard():
  
 # Edit appointment (simple inline form)
 @app.route('/edit/<int:appointment_id>', methods=['GET', 'POST'])
-@login_required
 def edit_appointment(appointment_id):
     conn = get_db_connection()
     appt = conn.execute('SELECT * FROM appointments WHERE id=?', (appointment_id,)).fetchone()
@@ -201,10 +99,8 @@ def edit_appointment(appointment_id):
     conn.close()
     return form_html
  
-# Receptionist dashboard with filters (reception role required)
+# Receptionist dashboard with filters
 @app.route('/reception')
-@login_required
-@role_required('reception', 'admin')
 def reception():
     date = request.args.get('date','').strip()
     doctor = request.args.get('doctor','').strip()
@@ -221,8 +117,6 @@ def reception():
     return render_template('reception.html', appointments=rows)
  
 @app.route('/checkin/<int:appointment_id>')
-@login_required
-@role_required('reception','admin')
 def checkin(appointment_id):
     conn = get_db_connection()
     conn.execute("UPDATE appointments SET status='checked_in' WHERE id=?", (appointment_id,))
@@ -232,8 +126,6 @@ def checkin(appointment_id):
     return redirect(url_for('reception'))
  
 @app.route('/cancel/<int:appointment_id>')
-@login_required
-@role_required('reception','admin')
 def cancel(appointment_id):
     conn = get_db_connection()
     conn.execute("UPDATE appointments SET status='cancelled' WHERE id=?", (appointment_id,))
@@ -242,10 +134,8 @@ def cancel(appointment_id):
     flash("Appointment cancelled.", "info")
     return redirect(url_for('reception'))
  
-# Admin dashboard + today's list (admin role required)
+# Admin dashboard + today's list
 @app.route('/admin')
-@login_required
-@role_required('admin')
 def admin():
     conn = get_db_connection()
     total = conn.execute('SELECT COUNT(*) FROM appointments').fetchone()[0]
@@ -258,10 +148,8 @@ def admin():
     stats = {'total': total, 'today': today_count, 'checked_in': checked_in, 'cancelled': cancelled}
     return render_template('admin.html', stats=stats, todays=todays)
  
-# CSV export (admin only)
+# CSV export
 @app.route('/export')
-@login_required
-@role_required('admin')
 def export_csv():
     conn = get_db_connection()
     rows = conn.execute("SELECT * FROM appointments ORDER BY date, time").fetchall()
@@ -276,4 +164,3 @@ def export_csv():
  
 if __name__ == '__main__':
     app.run(debug=True)
- 

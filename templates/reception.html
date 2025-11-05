@@ -1,52 +1,124 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Reception Dashboard</title>
+  <title>Reception Dashboard - SmartClinic</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    table {
+      width: 95%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background: #f0f6ff; }
+    form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    form input {
+      padding: 6px;
+      margin: 0 5px;
+    }
+    button, a.button {
+      background: #1f6feb;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    button:hover, a.button:hover { background: #1556b3; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Reception Dashboard - Today's Appointments</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="messages">
-          {% for category, msg in messages %}
-            <li class="{{ category }}">{{ msg }}</li>
-          {% endfor %}
-        </ul>
+ 
+  <!-- ✅ Navbar -->
+  <nav class="topnav">
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('booking') }}">Book</a> |
+    <a href="{{ url_for('appointments') }}">All Appointments</a> |
+    <a href="{{ url_for('reception') }}">Reception</a> |
+    <a href="{{ url_for('admin') }}">Admin</a> |
+    <a href="{{ url_for('patient_dashboard') }}">Patient Dashboard</a>
+ 
+    <span style="float:right;">
+      {% if session.get('user_id') %}
+        Hello, {{ session.get('full_name') or session.get('username') }} |
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a> |
+        <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
-    {% endwith %}
-    {% if appointments %}
-      <table>
-        <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody>
-        {% for a in appointments %}
-          <tr>
-            <td>{{ a['id'] }}</td>
-            <td>{{ a['patient_name'] }}</td>
-            <td>{{ a['doctor_name'] }}</td>
-            <td>{{ a['date'] }}</td>
-            <td>{{ a['time'] }}</td>
-            <td>{{ a['status'] }}</td>
-            <td>
-              {% if a['status'] != 'checked_in' and a['status'] != 'cancelled' %}
-                <a href="{{ url_for('checkin', appointment_id=a['id']) }}">Check-in</a>
-                &nbsp;|&nbsp;
-                <a href="{{ url_for('cancel', appointment_id=a['id']) }}">Cancel</a>
-              {% else %}
-                -
-              {% endif %}
-            </td>
-          </tr>
+    </span>
+  </nav>
+  <hr/>
+ 
+  <!-- ✅ Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="messages">
+        {% for category, msg in messages %}
+          <li class="{{ category }}">{{ msg }}</li>
         {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No appointments.</p>
+      </ul>
     {% endif %}
-    <p><a href="{{ url_for('home') }}">Home</a></p>
-  </div>
+  {% endwith %}
+ 
+  <!-- ✅ Filter form -->
+  <h2 style="text-align:center;">Reception Dashboard</h2>
+  <form method="GET" action="{{ url_for('reception') }}">
+    <label>Date:</label>
+    <input type="date" name="date" value="{{ request.args.get('date','') }}">
+    <label>Doctor:</label>
+    <input type="text" name="doctor" value="{{ request.args.get('doctor','') }}" placeholder="Doctor name">
+    <button type="submit">Filter</button>
+    <a href="{{ url_for('reception') }}" class="button">Clear</a>
+  </form>
+ 
+  <!-- ✅ Appointment list -->
+  {% if appointments %}
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>{{ a['id'] }}</td>
+          <td>{{ a['patient_name'] }}</td>
+          <td>{{ a['doctor_name'] }}</td>
+          <td>{{ a['date'] }}</td>
+          <td>{{ a['time'] }}</td>
+          <td>{{ a['status'] }}</td>
+          <td>
+            {% if a['status'] == 'booked' %}
+              <a href="{{ url_for('checkin', appointment_id=a['id']) }}" class="button">Check-In</a>
+              <a href="{{ url_for('cancel', appointment_id=a['id']) }}" class="button" style="background:#a00;">Cancel</a>
+            {% else %}
+              {{ a['status']|capitalize }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="text-align:center;">No appointments found for the selected filters.</p>
+  {% endif %}
+ 
 </body>
 </html>
  
