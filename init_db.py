@@ -2,51 +2,68 @@
 import sqlite3
 from werkzeug.security import generate_password_hash
  
-def init_db():
-    conn = sqlite3.connect('clinic.db')
-    cur = conn.cursor()
+# Connect (or create) the database file
+conn = sqlite3.connect("clinic.db")
  
-    # appointments table (keeps existing schema)
-    cur.execute('''
-    CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_name TEXT NOT NULL,
-        doctor_name TEXT NOT NULL,
-        date TEXT NOT NULL,
-        time TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'booked'
-    )
-    ''')
+# ---------------------------
+# 1️⃣ Create the users table
+# ---------------------------
+conn.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT,
+    password TEXT NOT NULL,
+    role TEXT CHECK(role IN ('patient', 'reception', 'admin')) NOT NULL,
+    full_name TEXT
+)
+""")
  
-    # users table: role can be 'admin', 'reception', or 'patient'
-    cur.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE,
-        password TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'patient',
-        full_name TEXT
-    )
-    ''')
+# -------------------------------
+# 2️⃣ Create the appointments table
+# -------------------------------
+conn.execute("""
+CREATE TABLE IF NOT EXISTS appointments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    patient_name TEXT NOT NULL,
+    doctor_name TEXT NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    status TEXT DEFAULT 'pending'
+)
+""")
  
-    # create a default admin user if not exists
-    # NOTE: change password after first login in production
-    admin_username = 'admin'
-    admin_email = 'admin@example.com'
-    admin_password = 'admin123'  # you can change this before running
+# -----------------------------------
+# 3️⃣ Create default user accounts
+# -----------------------------------
  
-    cur.execute("SELECT id FROM users WHERE username=?", (admin_username,))
-    if cur.fetchone() is None:
-        from werkzeug.security import generate_password_hash
-        hashed = generate_password_hash(admin_password)
-        cur.execute("INSERT INTO users (username, email, password, role, full_name) VALUES (?,?,?,?,?)",
-                    (admin_username, admin_email, hashed, 'admin', 'Site Admin'))
-        print("Created default admin user (username: admin, password: admin123)")
+# Admin account
+admin_pass = generate_password_hash("admin123")
+conn.execute("""
+INSERT OR IGNORE INTO users (username, email, password, role, full_name)
+VALUES ('admin', 'admin@clinic.com', ?, 'admin', 'Admin User')
+""", (admin_pass,))
  
-    conn.commit()
-    conn.close()
-    print("Database initialized (clinic.db)")
+# Reception account
+reception_pass = generate_password_hash("reception123")
+conn.execute("""
+INSERT OR IGNORE INTO users (username, email, password, role, full_name)
+VALUES ('reception', 'reception@clinic.com', ?, 'reception', 'Reception Staff')
+""", (reception_pass,))
  
-if __name__ == "__main__":
-    init_db()
+# Patient account
+patient_pass = generate_password_hash("patient123")
+conn.execute("""
+INSERT OR IGNORE INTO users (username, email, password, role, full_name)
+VALUES ('patient', 'patient@clinic.com', ?, 'patient', 'John Doe')
+""", (patient_pass,))
+ 
+# Save everything and close the connection
+conn.commit()
+conn.close()
+ 
+print("✅ Database initialized successfully!")
+print("➡ Default users created:")
+print("   Admin: admin / admin123")
+print("   Reception: reception / reception123")
+print("   Patient: patient / patient123")
