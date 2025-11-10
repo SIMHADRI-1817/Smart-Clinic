@@ -1,69 +1,53 @@
-# init_db.py
 import sqlite3
 from werkzeug.security import generate_password_hash
  
-# Connect (or create) the database file
-conn = sqlite3.connect("clinic.db")
+conn = sqlite3.connect('clinic.db')
  
-# ---------------------------
-# 1️⃣ Create the users table
-# ---------------------------
-conn.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    email TEXT,
-    password TEXT NOT NULL,
-    role TEXT CHECK(role IN ('patient', 'reception', 'admin')) NOT NULL,
-    full_name TEXT
-)
-""")
+# Drop old tables if you want a fresh start (optional)
+conn.execute("DROP TABLE IF EXISTS appointments")
+conn.execute("DROP TABLE IF EXISTS users")
  
-# -------------------------------
-# 2️⃣ Create the appointments table
-# -------------------------------
-conn.execute("""
-CREATE TABLE IF NOT EXISTS appointments (
+# Create appointments table
+conn.execute('''
+CREATE TABLE appointments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     patient_name TEXT NOT NULL,
     doctor_name TEXT NOT NULL,
     date TEXT NOT NULL,
     time TEXT NOT NULL,
-    status TEXT DEFAULT 'pending'
+    status TEXT DEFAULT 'pending',
+    queue_number INTEGER
 )
-""")
+''')
  
-# -----------------------------------
-# 3️⃣ Create default user accounts
-# -----------------------------------
+# Create users table with specialization
+conn.execute('''
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    full_name TEXT NOT NULL,
+    email TEXT,
+    password TEXT NOT NULL,
+    role TEXT CHECK(role IN ('patient','reception','admin','doctor')) NOT NULL,
+    specialization TEXT
+)
+''')
  
-# Admin account
-admin_pass = generate_password_hash("admin123")
-conn.execute("""
-INSERT OR IGNORE INTO users (username, email, password, role, full_name)
-VALUES ('admin', 'admin@clinic.com', ?, 'admin', 'Admin User')
-""", (admin_pass,))
+# Add sample doctors
+doctors = [
+    ('dr_Ashish', 'Dr. Ashish', 'ashish@clinic.com', generate_password_hash('12345'), 'doctor', 'Cardiologist'),
+    ('dr_Neha', 'Dr. Neha Sharma', 'neha@clinic.com', generate_password_hash('12345'), 'doctor', 'Dermatologist'),
+    ('dr_Ravi', 'Dr. Ravi Teja', 'ravi@clinic.com', generate_password_hash('12345'), 'doctor', 'Pediatrician')
+]
  
-# Reception account
-reception_pass = generate_password_hash("reception123")
-conn.execute("""
-INSERT OR IGNORE INTO users (username, email, password, role, full_name)
-VALUES ('reception', 'reception@clinic.com', ?, 'reception', 'Reception Staff')
-""", (reception_pass,))
+conn.executemany('INSERT INTO users (username, full_name, email, password, role, specialization) VALUES (?, ?, ?, ?, ?, ?)', doctors)
  
-# Patient account
-patient_pass = generate_password_hash("patient123")
-conn.execute("""
-INSERT OR IGNORE INTO users (username, email, password, role, full_name)
-VALUES ('patient', 'patient@clinic.com', ?, 'patient', 'John Doe')
-""", (patient_pass,))
+# Add one sample admin and receptionist
+conn.execute("INSERT INTO users (username, full_name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+             ('admin', 'Admin User', 'admin@clinic.com', generate_password_hash('admin123'), 'admin'))
+conn.execute("INSERT INTO users (username, full_name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+             ('reception', 'Reception Staff', 'reception@clinic.com', generate_password_hash('reception123'), 'reception'))
  
-# Save everything and close the connection
 conn.commit()
 conn.close()
- 
-print("✅ Database initialized successfully!")
-print("➡ Default users created:")
-print("   Admin: admin / admin123")
-print("   Reception: reception / reception123")
-print("   Patient: patient / patient123")
+print("✅ Database initialized successfully with sample data.")

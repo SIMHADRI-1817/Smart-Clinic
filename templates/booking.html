@@ -2,198 +2,216 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book Appointment | SmartClinic</title>
+ 
+  <!-- Main CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ 
   <style>
     body {
-      font-family: "Poppins", "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #cce5ff 0%, #e6f0ff 100%);
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
       margin: 0;
       padding: 0;
-      animation: fadeIn 0.6s ease-in;
+      color: #333;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ---------------- HEADER ---------------- */
-    header {
-      background: linear-gradient(90deg, #0072ff 0%, #00aaff 100%);
-      color: white;
-      padding: 20px 40px;
+ 
+    /* Navbar */
+    .navbar {
+      background: #007bff;
+      color: #fff;
+      padding: 12px 25px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-      position: relative;
-      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-
-    header h2 {
-      margin: 0;
-      color: #ffffff; /* pure white text */
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      font-size: 26px;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); /* visible against gradient */
+ 
+    .navbar .logo {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
-
-    header a.logout {
+ 
+    .navbar a {
       color: #fff;
       text-decoration: none;
-      background: rgba(255, 255, 255, 0.25);
-      padding: 8px 18px;
-      border-radius: 25px;
-      transition: 0.2s ease;
+      margin: 0 10px;
       font-weight: 500;
     }
-
-    header a.logout:hover {
-      background: white;
-      color: #0077cc;
+ 
+    .navbar a:hover {
+      text-decoration: underline;
     }
-
-    /* ---------------- FORM CONTAINER ---------------- */
-    .form-container {
-      background: rgba(255, 255, 255, 0.95);
-      width: 480px;
+ 
+    /* Booking Card */
+    .booking-container {
+      max-width: 480px;
       margin: 60px auto;
-      padding: 35px 40px;
-      border-radius: 18px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
+      background: #fff;
+      padding: 40px 35px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    }
+ 
+    h2 {
       text-align: center;
-      animation: fadeIn 0.7s ease-in-out;
-    }
-
-    .form-container h3 {
-      color: #0077cc;
-      margin-bottom: 25px;
-      font-size: 22px;
+      color: #007bff;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      margin-bottom: 25px;
     }
-
-    .form-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
+ 
     label {
       display: block;
-      margin-bottom: 8px;
-      color: #333;
+      margin-top: 15px;
+      color: #444;
       font-weight: 500;
     }
-
-    input, select {
+ 
+    select, input[type="date"], input[type="time"] {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
       font-size: 15px;
       outline: none;
-      transition: 0.2s ease;
+      transition: all 0.3s;
     }
-
-    input:focus, select:focus {
-      border-color: #0077cc;
-      box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.2);
+ 
+    select:focus, input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.3);
     }
-
-    /* ---------------- BUTTON ---------------- */
+ 
+    /* Search inside dropdown */
+    .search-box {
+      margin-top: 10px;
+      position: relative;
+    }
+ 
+    .search-box input {
+      width: 100%;
+      padding: 10px 35px 10px 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+ 
+    .search-box input:focus {
+      border-color: #007bff;
+    }
+ 
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      font-size: 18px;
+      color: #888;
+    }
+ 
     button {
-      background: linear-gradient(90deg, #0077cc, #00b4d8);
+      width: 100%;
+      background: #007bff;
       color: white;
       border: none;
-      border-radius: 10px;
-      padding: 12px 20px;
-      cursor: pointer;
+      border-radius: 8px;
+      padding: 12px;
       font-size: 16px;
-      font-weight: 500;
-      width: 100%;
-      transition: 0.25s;
-      margin-top: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.3s;
     }
-
+ 
     button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 119, 204, 0.3);
+      background: #0056b3;
     }
-
-    /* ---------------- FOOTER ---------------- */
+ 
     footer {
       text-align: center;
-      margin: 40px 0;
-      color: #555;
+      color: #777;
+      margin-top: 40px;
       font-size: 14px;
     }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 15px;
-      text-decoration: none;
-      color: #0077cc;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-
-    .back-link:hover {
-      color: #005fa3;
-      text-decoration: underline;
+ 
+    .flash {
+      background: #eaf4ff;
+      color: #007bff;
+      border-left: 4px solid #007bff;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 15px;
     }
   </style>
 </head>
+ 
 <body>
-
-  <header>
-    <h2>Book Appointment</h2>
+  <!-- Navigation -->
+  <div class="navbar">
+    <div class="logo">SmartClinic</div>
     <div>
-      <span>Welcome, {{ session['full_name'] }}</span> |
-      <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('patient_dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
     </div>
-  </header>
-
-  <div class="form-container">
-    <h3>Schedule Your Visit</h3>
-    <form method="POST" action="{{ url_for('booking') }}">
-      <div class="form-group">
-        <label for="patient_name">Patient Name</label>
-        <input type="text" id="patient_name" name="patient_name" required placeholder="Enter your full name">
-      </div>
-
-      <div class="form-group">
-        <label for="doctor_name">Doctor</label>
-        <select id="doctor_name" name="doctor_name" required>
-          <option value="" disabled selected>Select Doctor</option>
-          <option value="Dr. Alan">Dr. Alan</option>
-          <option value="Dr. John">Dr. John</option>
-          <option value="Dr. Linda">Dr. Linda</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date" required>
-      </div>
-
-      <div class="form-group">
-        <label for="time">Time</label>
-        <input type="time" id="time" name="time" required>
-      </div>
-
-      <button type="submit">Confirm Appointment</button>
-    </form>
-
-    <a href="{{ url_for('appointments') }}" class="back-link">← Back to My Appointments</a>
   </div>
-
+ 
+  <!-- Booking Form -->
+  <div class="booking-container">
+    <h2>Book Your Appointment</h2>
+ 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+ 
+    <!-- Doctor Search -->
+    <div class="search-box">
+      <input type="text" id="doctorSearch" onkeyup="filterDoctors()" placeholder="Search Doctor or Specialization...">
+      <span class="search-icon">🔍</span>
+    </div>
+ 
+    <form method="POST">
+      <label for="doctor_name">Select Doctor</label>
+      <select name="doctor_name" id="doctorDropdown" required>
+        <option value="">-- Choose Doctor --</option>
+        {% for doctor in doctors %}
+          <option value="{{ doctor['full_name'] }}">{{ doctor['full_name'] }} — {{ doctor['specialization'] }}</option>
+        {% endfor %}
+      </select>
+ 
+      <label for="date">Select Date</label>
+      <input type="date" id="date" name="date" required>
+ 
+      <label for="time">Select Time</label>
+      <input type="time" id="time" name="time" required>
+ 
+      <button type="submit">Confirm Booking</button>
+    </form>
+  </div>
+ 
   <footer>
-    <p>SmartClinic © 2025 | Booking Portal</p>
+    <p>© 2025 SmartClinic | Designed with ❤️ by Zikra & Team</p>
   </footer>
-
+ 
+  <script>
+    // Function to filter doctors dynamically
+    function filterDoctors() {
+      const input = document.getElementById("doctorSearch");
+      const filter = input.value.toLowerCase();
+      const dropdown = document.getElementById("doctorDropdown");
+      const options = dropdown.getElementsByTagName("option");
+ 
+      for (let i = 0; i < options.length; i++) {
+        const txtValue = options[i].textContent || options[i].innerText;
+        options[i].style.display = txtValue.toLowerCase().includes(filter) ? "" : "none";
+      }
+    }
+  </script>
 </body>
 </html>
