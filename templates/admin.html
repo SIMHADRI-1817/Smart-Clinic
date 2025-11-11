@@ -1,3 +1,5 @@
+# Step 3: Update admin.html for consistent navbar structure, correct status tags, and dashboard classes.
+admin_html = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,20 +10,20 @@
 </head>
 <body>
     <header>
-        <nav class="navbar">
+        <div class="navbar">
             <div class="logo">🩺 SmartClinic Admin</div>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-        </nav>
+            <nav>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('reception') }}">Reception</a>
+                <a href="{{ url_for('logout') }}" class="btn-danger">Logout</a>
+            </nav>
+        </div>
     </header>
  
     <main class="dashboard-container">
         <h2>Welcome, {{ user['full_name'] if user else 'Admin' }}</h2>
         <p class="subtitle">Monitor clinic performance and manage appointments efficiently</p>
  
-        <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card blue">
                 <h3>Total Appointments</h3>
@@ -42,12 +44,11 @@
         </div>
  
         <div class="dashboard-actions">
-            <a href="{{ url_for('export_csv') }}" class="btn-primary">⬇️ Export Data (CSV)</a>
+            <a href="{{ url_for('export_csv') }}" class="btn">⬇️ Export Data (CSV)</a>
         </div>
  
-        <!-- Today's Appointments -->
-        <h3 style="margin-top:30px;">Today's Appointments</h3>
-        <table class="styled-table">
+        <h3 style="margin-top:30px; color: var(--color-teal);">Today's Appointments</h3>
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
@@ -67,7 +68,7 @@
                         <td>{{ appt['doctor_name'] }}</td>
                         <td>{{ appt['date'] }}</td>
                         <td>{{ appt['time'] }}</td>
-                        <td>{{ appt['status'] }}</td>
+                        <td><span class="status-tag status-{{ appt['status']|lower }}">{{ appt['status']|capitalize }}</span></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -82,3 +83,8 @@
     </footer>
 </body>
 </html>
+"""
+with open("admin.html", "w") as f:
+    f.write(admin_html)
+
+print("✅ admin.html updated for consistent navigation, status tags, and dashboard classes.")

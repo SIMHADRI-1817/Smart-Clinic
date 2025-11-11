@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Appointment | SmartClinic</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">🩺 SmartClinic</div>
+            <nav>
+                <a href="{{ url_for('patient_dashboard') }}" class="btn-secondary">Back to Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container" style="margin-top: 60px;">
+        <h2>Edit Appointment #{{ appt.id }}</h2>
+        <p class="subtitle">Update your doctor, date, or time.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for category, msg in messages %}
+                <div class="flash {{ category }}">{{ msg }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="editForm">
+            <label for="doctor_name">Select Doctor</label>
+            <select name="doctor_name" id="doctorDropdown" required>
+                {% for doctor in doctors %}
+                    <option value="{{ doctor['full_name'] }}" 
+                            {% if appt['doctor_name'] == doctor['full_name'] %}selected{% endif %}>
+                        {{ doctor['full_name'] }} — {{ doctor['specialization'] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="date">Select Date</label>
+            <input type="date" id="dateInput" name="date" value="{{ appt['date'] }}" min="{{ today_date }}" required>
+
+            <label for="time">Select Time</label>
+            <select name="time" id="timeDropdown" required>
+                <option value="{{ appt['time'] }}" selected>{{ appt['time'] }} (Current)</option>
+                <!-- Available times will be dynamically loaded here -->
+            </select>
+
+            <button type="submit" class="btn large">Save Changes</button>
+        </form>
+
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/availability.js') }}"></script>
+    <script>
+        // Set the initial date min value to prevent booking past dates
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').setAttribute('min', today);
+
+            // Initial load of times for the selected doctor/date
+            loadAvailableTimes();
+            
+            // Re-load times when doctor or date changes
+            document.getElementById('doctorDropdown').addEventListener('change', loadAvailableTimes);
+            document.getElementById('dateInput').addEventListener('change', loadAvailableTimes);
+        });
+
+        // The loadAvailableTimes function is now in script.js (renamed to availability.js)
+    </script>
+    
+    <footer>
+        <p>© 2025 SmartClinic | Designed with ❤️ by Zikra & Team</p>
+    </footer>
+</body>
+</html>

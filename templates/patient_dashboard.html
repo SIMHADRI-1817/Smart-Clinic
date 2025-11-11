@@ -1,78 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard | SmartClinic</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <div class="logo">🩺 SmartClinic</div>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('booking') }}">Book Appointment</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
- 
-    <!-- Main Section -->
-    <main class="dashboard-container">
-        <h2>Welcome, {{ user['full_name'] if user else 'Patient' }}</h2>
-        <p>Manage your appointments easily below 👇</p>
- 
-        <div class="dashboard-actions">
-            <a href="{{ url_for('booking') }}" class="btn-primary">➕ Book New Appointment</a>
-        </div>
- 
-        <div class="appointments-section">
-            <h3>My Appointments</h3>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Doctor</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Queue</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if appointments %}
-                        {% for appt in appointments %}
-                        <tr>
-                            <td>{{ appt['id'] }}</td>
-                            <td>{{ appt['doctor_name'] }}</td>
-                            <td>{{ appt['date'] }}</td>
-                            <td>{{ appt['time'] }}</td>
-                            <td>{{ appt['queue_number'] if appt['queue_number'] else '-' }}</td>
-                            <td>
-                                {% if appt['status'] == 'checked_in' %}
-                                    <span class="badge badge-green">Checked In</span>
-                                {% elif appt['status'] == 'cancelled' %}
-                                    <span class="badge badge-red">Cancelled</span>
-                                {% else %}
-                                    <span class="badge badge-blue">Pending</span>
-                                {% endif %}
-                            </td>
-                            <td><a href="{{ url_for('edit_appointment', appointment_id=appt['id']) }}" class="btn-secondary">Edit</a></td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr><td colspan="7" class="empty-row">No appointments yet.</td></tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </main>
- 
-    <footer>
-        <p>© 2025 SmartClinic | Designed for Project</p>
-    </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}My Dashboard | SmartClinic{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h2>My Appointments</h2>
+    {% if appointments|length == 0 %}
+      <div class="panel">No appointments yet. <a href="{{ url_for('booking') }}">Book your first one.</a></div>
+    {% else %}
+      <table class="table">
+        <thead><tr><th>ID</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td>{{ a['id'] }}</td>
+            <td>{{ a['doctor_name'] }}</td>
+            <td>{{ a['date'] }}</td>
+            <td>{{ a['time'] }}</td>
+            <td>
+              {% if a['status'] == 'checked_in' %}
+                <span class="badge ok">Checked In</span>
+              {% elif a['status'] == 'cancelled' %}
+                <span class="badge err">Cancelled</span>
+              {% else %}
+                <span class="badge warn">Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if a['status'] != 'cancelled' %}
+                <a class="btn btn-outline" href="{{ url_for('edit_appointment', appointment_id=a['id']) }}">Edit</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

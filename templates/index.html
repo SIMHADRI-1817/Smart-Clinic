@@ -7,31 +7,44 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <!-- Navbar -->
   <header class="navbar">
     <div class="logo">SmartClinic</div>
     <nav>
-      <a href="/">Home</a>
-      <a href="/login">Login</a>
-      <a href="/register">Sign Up</a>
+        <a href="{{ url_for('home') }}">Home</a>
+        {% if user %}
+            {% if user['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">Admin Dashboard</a>
+            {% elif user['role'] == 'reception' %}
+                <a href="{{ url_for('reception') }}">Reception Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('patient_dashboard') }}">My Dashboard</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn-danger">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}" class="btn">Sign Up</a>
+        {% endif %}
     </nav>
   </header>
  
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-text">
-      <h1>Book Doctor Appointments Instantly</h1>
-      <p>Because every heartbeat deserves attention — connect with doctors who truly care.</p>
-      <a href="/booking" class="btn">Book Appointment</a>
+<section class="hero-split">
+  <div class="hero-text-block">
+    <h1>Helping You Care Better One Click, One Patient One Life at a Time</h1>
+    <p>Because every heartbeat deserves attention — connect with doctors who truly care.</p>
+
+    <div class="hero-buttons">
+      <a href="{{ url_for('booking') }}" class="btn">Book an Appointment</a>
+      <a href="{{ url_for('contact') }}" class="btn btn-outline">Contact Us</a>
     </div>
-    <div class="hero-img">
-      <img src="{{ url_for('static', filename='images/team-doctors.png') }}" alt="Team of Doctors">
-    </div>
-  </section>
- 
-  
-<!-- 💎 Why Choose SmartClinic -->
-  <section class="features">
+  </div>
+
+  <div class="hero-image-block">
+    <div class="hero-blob"></div>
+    <img src="{{ url_for('static', filename='images/team-doctors.png') }}" alt="Doctor">
+  </div>
+</section>
+
+<section class="features">
     <h2>Why Choose SmartClinic?</h2>
     <div class="feature-container">
       <div class="feature-card">
@@ -57,65 +70,112 @@
     </div>
   </section>
  
-  <!-- Top Specialties -->
-  <section class="specialties">
-    <h2>Find Doctors in Top Specialties</h2>
-    <div class="card-grid">
+<!-- 🩵 Top Specialties -->
+<section class="specialties">
+  <h2>Find Doctors in Top Specialties</h2>
+  <div class="carousel-container">
+    <button class="carousel-btn left" data-section="specialties">❮</button>
+    <div class="carousel-track specialties-track">
       <div class="card"><img src="{{ url_for('static', filename='images/dentist.jpg') }}"><p>Dentist</p></div>
       <div class="card"><img src="{{ url_for('static', filename='images/cardiologist.jpg') }}"><p>Cardiologist</p></div>
       <div class="card"><img src="{{ url_for('static', filename='images/gynecologist.jpg') }}"><p>Gynecologist</p></div>
       <div class="card"><img src="{{ url_for('static', filename='images/dermatologist.jpg') }}"><p>Dermatologist</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/pediatrician.jpg') }}"><p>Pediatrician</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/neurologist.jpg') }}"><p>Neurologist</p></div>
     </div>
-  </section>
- 
-  <!-- Top Hospitals -->
-  <section class="hospitals">
-    <h2>Find Doctors in Top Hospitals</h2>
-    <div class="card-grid">
-      <div class="card"><img src="{{ url_for('static', filename='images/apollo.png') }}"><p>Apollo Hospital</p></div>
-      <div class="card"><img src="{{ url_for('static', filename='images/fortis.png') }}"><p>Fortis Hospital</p></div>
-      <div class="card"><img src="{{ url_for('static', filename='images/medanta.png') }}"><p>Medanta Hospital</p></div>
-    </div>
-  </section>
- 
-  <!-- Health Conditions -->
-<section class="conditions">
-  <h2>Health Conditions We Treat</h2>
-  <div class="scroll-container">
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/diabetes.jpg') }}">
-      <p>Diabetes Care</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/fever.jpg') }}">
-      <p>Fever & Cold</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/skin.jpg') }}">
-      <p>Skin Allergies</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/pain.jpg') }}">
-      <p>Back & Joint Pain</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/heart.jpg') }}">
-      <p>Heart Diseases</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/asthma.jpg') }}">
-      <p>Asthma & Breathing Issues</p>
-    </div>
-    <div class="condition-card">
-      <img src="{{ url_for('static', filename='images/eye.jpg') }}">
-      <p>Eye Infections</p>
-    </div>
+    <button class="carousel-btn right" data-section="specialties">❯</button>
   </div>
 </section>
  
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 SmartClinic | From our hearts to yours — thank you for letting us be part of your healing.</p>
-  </footer>
+<!-- 🩵 Top Hospitals -->
+<section class="hospitals">
+  <h2>Find Doctors in Top Hospitals</h2>
+  <div class="carousel-container">
+    <button class="carousel-btn left" data-section="hospitals">❮</button>
+    <div class="carousel-track hospitals-track">
+      <div class="card"><img src="{{ url_for('static', filename='images/apollo.png') }}"><p>Apollo Hospital</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/fortis.png') }}"><p>Fortis Hospital</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/medanta.png') }}"><p>Medanta Hospital</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/manipal.png') }}"><p>Manipal Hospital</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/narayana.png') }}"><p>Narayana Health</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/aiims.png') }}"><p>AIIMS</p></div>
+    </div>
+    <button class="carousel-btn right" data-section="hospitals">❯</button>
+  </div>
+</section>
+ 
+<!-- 🩵 Health Conditions -->
+<section class="conditions">
+  <h2>Health Conditions We Treat</h2>
+  <div class="carousel-container">
+    <button class="carousel-btn left" data-section="conditions">❮</button>
+    <div class="carousel-track conditions-track">
+      <div class="card"><img src="{{ url_for('static', filename='images/diabetes.jpg') }}"><p>Diabetes Care</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/fever.jpg') }}"><p>Fever & Cold</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/skin.jpg') }}"><p>Skin Allergies</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/pain.jpg') }}"><p>Back & Joint Pain</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/heart.jpg') }}"><p>Heart Disease</p></div>
+      <div class="card"><img src="{{ url_for('static', filename='images/asthma.jpg') }}"><p>Asthma & Breathing</p></div>
+    </div>
+    <button class="carousel-btn right" data-section="conditions">❯</button>
+  </div>
+</section>
+ 
+<footer>
+  <p>© 2025 SmartClinic | From our hearts to yours — thank you for letting us be part of your healing.</p>
+</footer>
+ 
+<!-- JavaScript for Carousel Sliding -->
+<script>
+document.querySelectorAll('.carousel-container').forEach(container => {
+  const track   = container.querySelector('.carousel-track');
+  const cards   = [...track.querySelectorAll('.card')];
+  const nextBtn = container.querySelector('.carousel-btn.right');
+  const prevBtn = container.querySelector('.carousel-btn.left');
+ 
+  // show exactly 4 at a time
+  const visibleCount = 4;
+  let index = 0;
+ 
+  // how far to move for one step (card width + margins), computed from the DOM
+  const getStep = () => {
+    if (!cards.length) return 0;
+    const cs = getComputedStyle(cards[0]);
+    const ml = parseFloat(cs.marginLeft)  || 0;
+    const mr = parseFloat(cs.marginRight) || 0;
+    const w  = cards[0].getBoundingClientRect().width;
+    return Math.round(w + ml + mr);
+  };
+ 
+  const maxIndex = Math.max(0, cards.length - visibleCount);
+ 
+  function update() {
+    const step = getStep();
+    const x = -(index * step);
+    track.style.transform = `translateX(${x}px)`;
+  }
+ 
+  nextBtn && nextBtn.addEventListener('click', () => {
+    if (index < maxIndex) {
+      index++;
+      update();
+    }
+  });
+ 
+  prevBtn && prevBtn.addEventListener('click', () => {
+    if (index > 0) {
+      index--;
+      update();
+    }
+  });
+ 
+  // keep position correct if window size changes
+  window.addEventListener('resize', update);
+ 
+  // initial position
+  update();
+});
+</script>
+ 
 </body>
 </html>

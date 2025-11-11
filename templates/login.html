@@ -1,32 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login | SmartClinic</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="login-page">
-  <div class="form-container">
-    <h2>Welcome Back 👋</h2>
-    <p class="subtitle">Log in to manage your appointments and health records</p>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for category, msg in messages %}
-            <div class="flash {{ category }}">{{ msg }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-    
-    <form method="POST" action="{{ url_for('login') }}">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <button type="submit" class="btn large">Login</button>
+{% extends "base.html" %}
+{% block title %}Login / Sign up | SmartClinic{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="display:grid; gap:24px; grid-template-columns:1fr 1fr">
+    <form method="post" class="panel">
+      <h2>Login</h2>
+      <input type="hidden" name="action" value="login">
+      <div class="form-group">
+        <label>Username</label>
+        <input name="username" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input name="password" type="password" required />
+      </div>
+      <button class="btn btn-primary" type="submit">Log In</button>
     </form>
- 
-    <p class="alt-link">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+
+    <form method="post" class="panel">
+      <h2>Create Patient Account</h2>
+      <input type="hidden" name="action" value="signup">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input name="full_name" required />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input name="email" type="email" required />
+      </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input name="username" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input name="password" type="password" required />
+      </div>
+      <button class="btn btn-outline" type="submit">Sign Up</button>
+      <div class="help">Staff accounts should be created by Admin/Reception.</div>
+    </form>
   </div>
-</body>
-</html>
+</section>
+{% endblock %}
